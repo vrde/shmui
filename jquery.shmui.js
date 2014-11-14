@@ -1,16 +1,34 @@
 (function ($) {
     'use strict'
 
+    // Keys to trap when plugin is active
+    var TRAPPED = ['Esc', 'Left', 'Right', ' '];
+
+
     $.fn.shmui = function (options) {
 
-        var TRAPPED = ['Esc', 'Left', 'Right', ' ']
+        var state = {
+            // array with all the images to display
+            // in the gallery
+            images: [],
 
+            // last URL location before activating
+            // the plugin
+            lastLocation: null,
 
-        function getLightbox () {
+            // index of the active slide
+            current: null,
+
+            // root element containing everything
+            // related to the plugin
+            el: null
+        };
+
+        function getEl () {
             var content, controls, prev, next;
 
-            if (!lightbox) {
-                lightbox = $('<div />', {
+            if (!state.el) {
+                state.el = $('<div />', {
                     'class': 'shmui-wrap',
                 });
 
@@ -30,28 +48,28 @@
                     'class': 'shmui-next'
                 });
                 controls.append(prev, next);
-                lightbox.append(content);
-                lightbox.append(controls);
+                state.el.append(content);
+                state.el.append(controls);
 
                 prev.on('click', function (e) { $(this).blur(); move(-1); });
                 next.on('click', function (e) { $(this).blur(); move(1); });
-                $('body').prepend(lightbox).addClass('shmui-stop-scrolling');
+                $('body').prepend(state.el).addClass('shmui-stop-scrolling');
             }
-            return lightbox;
+            return state.el;
         }
 
         function move (offset) {
-            var pos = (current + offset) % images.length;
+            var pos = (state.current + offset) % state.images.length;
             if (pos == -1)
-                pos = images.length - 1
+                pos = state.images.length - 1
             show(pos);
         };
 
         function show (index) {
-            var lightbox = getLightbox(),
-                content = lightbox.find('.shmui-content'),
+            var el = getEl(),
+                content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
-                img = images[index],
+                img = state.images[index],
                 url = img.attr('data-large-src') || img.attr('src');
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
@@ -62,27 +80,27 @@
                 content.remove()
             });
             newContent.hide().fadeIn('fast');
-            current = index;
+            state.current = index;
         }
 
         function close () {
             $('.shmui-wrap').remove();
             $('body').removeClass('shmui-stop-scrolling');
-            lightbox = null;
-            current = null;
+            state.el = null;
+            state.current = null;
         }
 
         function clicked (e) {
             var img = $(this);
-            if (!lastLocation)
-                lastLocation = window.location.pathname + window.location.search;
+            if (!state.lastLocation)
+                state.lastLocation = window.location.pathname + window.location.search;
             show(img.data('index'));
         }
 
         function keypress (e) {
             var k = e.key;
 
-            if(!lightbox)
+            if(!state.el)
                 return;
 
             if (k == 'Esc')
@@ -100,14 +118,11 @@
             $(document).on('keypress', keypress);
         }
 
-        var images = [],
-            lastLocation, current, lightbox;
-
         init();
 
         return this.each(function (i) {
             var img = $(this);
-            images.push(img);
+            state.images.push(img);
             img.addClass('shmui-item');
             img.click(clicked);
             img.data('index', i);
