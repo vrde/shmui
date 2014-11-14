@@ -1,0 +1,13 @@
+ul {
+    margin: 0 auto;
+    width: 500px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li img {
+    max-width: 100%;
+}
