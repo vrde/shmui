@@ -30,7 +30,7 @@
             }, options);
 
         function getEl () {
-            var content, controls, prev, next;
+            var content, controls, prev, $zoom, next;
 
             if (!state.el) {
                 state.el = $('<div />', {
@@ -49,23 +49,35 @@
                     'class': 'shmui-prev'
                 });
 
+                $zoom = $('<button />', {
+                    'class': 'shmui-zoom'
+                });
+
                 next = $('<button />', {
                     'class': 'shmui-next'
                 });
-                controls.append(prev, next);
+
+                controls.append(prev, $zoom, next);
                 state.el.append(content);
                 state.el.append(controls);
 
                 prev.on('click', function (e) { $(this).blur(); move(-1); });
+                $zoom.on('click', function (e) { $(this).blur(); zoom(e); });
                 next.on('click', function (e) { $(this).blur(); move(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
             }
             return state.el;
         }
 
+        function getSrc () {
+            var img = state.galleries[state.currentGallery][state.currentImage],
+                url = img.attr('data-large-src') || img.attr('src');
+            return url;
+        }
+
         function move (offset) {
             var gallery = state.galleries[state.currentGallery],
-                pos = (state.current + offset) % gallery.length;
+                pos = (state.currentImage + offset) % gallery.length;
 
             if (pos == -1)
                 pos = gallery.length - 1
@@ -78,6 +90,7 @@
                 newContent = $('<div />', { 'class': 'shmui-content' }),
                 img = state.galleries[state.currentGallery][imageIndex],
                 url = img.attr('data-large-src') || img.attr('src');
+
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
 
@@ -87,14 +100,15 @@
                 content.remove()
             });
             newContent.hide().fadeIn('fast');
-            state.current = imageIndex;
+            state.currentImage = imageIndex;
         }
 
         function close () {
             $('.shmui-wrap').remove();
             $('body').removeClass('shmui-stop-scrolling');
             state.el = null;
-            state.current = null;
+            state.currentGallery = null;
+            state.currentImage = null;
         }
 
         function clicked (e) {
@@ -105,6 +119,52 @@
             state.currentGallery = img.data('galleryIndex');
 
             show(img.data('imageIndex'));
+        }
+
+        function zoom (e) {
+            var el = getEl(),
+                content = el.find('.shmui-content'),
+                img = new Image();
+
+            content.off('click');
+            content.on('click', unzoom);
+            content.addClass('zoom');
+
+            img.onload = function () {
+                function reposition (e) {
+                    var x = -e.clientX * (imageWidth - el.width()) / el.width(),
+                        y = -e.clientY * (imageHeight - el.height()) / el.height();
+
+                    content.css('background-position', x + 'px ' + y + 'px');
+                }
+
+                var imageWidth = this.width,
+                    imageHeight = this.height;
+
+                reposition(e);
+
+                el.find('.shmui-controls').hide();
+                content.css('background-size', 'auto');
+                el.on('mousemove', reposition);
+            }
+
+            img.src = getSrc();
+        }
+
+        function unzoom () {
+            var el = getEl(),
+                content = el.find('.shmui-content');
+
+            content.removeClass('zoom');
+            el.find('.shmui-controls').show();
+            content.css({
+                'background-size': 'contain',
+                'background-position': 'center'
+            });
+
+            content.off('click');
+            content.on('click', close);
+            el.off('mousemove');
         }
 
         function keypress (e) {
@@ -119,6 +179,8 @@
                 move(-1);
             else if (k == 'Right' || k == ' ')
                 move(1);
+            else if (k == 'z')
+                zoom(e);
 
             if (TRAPPED.indexOf(k) != -1)
                 e.preventDefault();
@@ -138,6 +200,7 @@
             image.data('galleryIndex', galleryIndex);
             image.data('imageIndex', imageIndex);
         }
+
 
         init();
 
