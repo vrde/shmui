@@ -40,7 +40,7 @@
 
 .shmui-controls {
     position: absolute;
-    bottom: 55px;
+    top: 10px;
     right: 10px;
     left: 10px;
     height: 0;

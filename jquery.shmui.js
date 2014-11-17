@@ -62,7 +62,7 @@
                 state.el.append(controls);
 
                 prev.on('click', function (e) { $(this).blur(); move(-1); });
-                $zoom.on('click', function (e) { $(this).blur(); zoom(e); });
+                $zoom.on('click', function (e) { $(this).blur(); if (state.el.find('.zoom').length != 0) unzoom(); else zoom(e); });
                 next.on('click', function (e) { $(this).blur(); move(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
             }
@@ -81,15 +81,23 @@
 
             if (pos == -1)
                 pos = gallery.length - 1
-            show(pos);
-        };
+            state.currentImage = pos;
 
-        function show (imageIndex) {
+            update();
+        }
+
+        function goto(imageIndex, galleryIndex) {
+            state.currentImage = imageIndex;
+            state.currentGallery = galleryIndex;
+
+            update();
+        }
+
+        function update () {
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
-                img = state.galleries[state.currentGallery][imageIndex],
-                url = img.attr('data-large-src') || img.attr('src');
+                url = getSrc();
 
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
@@ -100,7 +108,6 @@
                 content.remove()
             });
             newContent.hide().fadeIn('fast');
-            state.currentImage = imageIndex;
         }
 
         function close () {
@@ -116,9 +123,9 @@
             if (!state.lastLocation)
                 state.lastLocation = window.location.pathname + window.location.search;
 
-            state.currentGallery = img.data('galleryIndex');
+            goto(img.data('imageIndex'), img.data('galleryIndex'));
 
-            show(img.data('imageIndex'));
+            update();
         }
 
         function zoom (e) {
@@ -132,10 +139,17 @@
 
             img.onload = function () {
                 function reposition (e) {
-                    var x = -e.clientX * (imageWidth - el.width()) / el.width(),
-                        y = -e.clientY * (imageHeight - el.height()) / el.height();
+                    var w = el.width(),
+                        h = el.height(),
+                        x = -e.clientX * (imageWidth - w) / w + 'px',
+                        y = -e.clientY * (imageHeight - h) / h + 'px';
 
-                    content.css('background-position', x + 'px ' + y + 'px');
+                    if (imageWidth <= w)
+                        x = 'center';
+                    if (imageHeight <= h)
+                        y = 'center';
+
+                    content.css('background-position', x + ' ' + y);
                 }
 
                 var imageWidth = this.width,
@@ -143,7 +157,6 @@
 
                 reposition(e);
 
-                el.find('.shmui-controls').hide();
                 content.css('background-size', 'auto');
                 el.on('mousemove', reposition);
             }
@@ -156,7 +169,6 @@
                 content = el.find('.shmui-content');
 
             content.removeClass('zoom');
-            el.find('.shmui-controls').show();
             content.css({
                 'background-size': 'contain',
                 'background-position': 'center'
