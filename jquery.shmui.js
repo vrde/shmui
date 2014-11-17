@@ -2,22 +2,23 @@
     'use strict'
 
     // Keys to trap when plugin is active
-    var TRAPPED = ['Esc', 'Left', 'Right', ' '],
-
+    var TRAPPED = ['Esc', 'Left', 'Right', ' '];
 
     $.fn.shmui = function (options) {
 
         var state = {
-                // array with all the images to display
-                // in the gallery
-                images: [],
+                // array containing the galleries
+                galleries: [],
 
                 // last URL location before activating
                 // the plugin
                 lastLocation: null,
 
-                // index of the active slide
-                current: null,
+                // index of the active gallery
+                currentGallery: null,
+
+                // index of the active image
+                currentImage: null,
 
                 // root element containing everything
                 // related to the plugin
@@ -63,17 +64,19 @@
         }
 
         function move (offset) {
-            var pos = (state.current + offset) % state.images.length;
+            var gallery = state.galleries[state.currentGallery],
+                pos = (state.current + offset) % gallery.length;
+
             if (pos == -1)
-                pos = state.images.length - 1
+                pos = gallery.length - 1
             show(pos);
         };
 
-        function show (index) {
+        function show (imageIndex) {
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
-                img = state.images[index],
+                img = state.galleries[state.currentGallery][imageIndex],
                 url = img.attr('data-large-src') || img.attr('src');
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
@@ -84,7 +87,7 @@
                 content.remove()
             });
             newContent.hide().fadeIn('fast');
-            state.current = index;
+            state.current = imageIndex;
         }
 
         function close () {
@@ -98,7 +101,10 @@
             var img = $(this);
             if (!state.lastLocation)
                 state.lastLocation = window.location.pathname + window.location.search;
-            show(img.data('index'));
+
+            state.currentGallery = img.data('galleryIndex');
+
+            show(img.data('imageIndex'));
         }
 
         function keypress (e) {
@@ -122,14 +128,29 @@
             $(document).on('keypress', keypress);
         }
 
+        function appendImage(galleryIndex, imageIndex, image) {
+            if (!state.galleries[galleryIndex])
+                state.galleries[galleryIndex] = []
+            state.galleries[galleryIndex].push(image);
+
+            image.addClass('shmui-item');
+            image.click(clicked);
+            image.data('galleryIndex', galleryIndex);
+            image.data('imageIndex', imageIndex);
+        }
+
         init();
 
         return this.each(function (i) {
-            var img = $(this);
-            state.images.push(img);
-            img.addClass('shmui-item');
-            img.click(clicked);
-            img.data('index', i);
+            var el = $(this);
+
+            if (el[0].tagName == 'IMG') {
+                appendImage(0, i, el)
+            } else {
+                el.find('img').each(function (j) { 
+                    appendImage(i, j, $(this));
+                });
+            }
         });
     };
 }) (jQuery);
