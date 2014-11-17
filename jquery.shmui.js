@@ -2,27 +2,31 @@
     'use strict'
 
     // Keys to trap when plugin is active
-    var TRAPPED = ['Esc', 'Left', 'Right', ' '];
+    var TRAPPED = ['Esc', 'Left', 'Right', ' '],
 
 
     $.fn.shmui = function (options) {
 
         var state = {
-            // array with all the images to display
-            // in the gallery
-            images: [],
+                // array with all the images to display
+                // in the gallery
+                images: [],
 
-            // last URL location before activating
-            // the plugin
-            lastLocation: null,
+                // last URL location before activating
+                // the plugin
+                lastLocation: null,
 
-            // index of the active slide
-            current: null,
+                // index of the active slide
+                current: null,
 
-            // root element containing everything
-            // related to the plugin
-            el: null
-        };
+                // root element containing everything
+                // related to the plugin
+                el: null
+            },
+
+            // soon...
+            settings = $.extend({
+            }, options);
 
         function getEl () {
             var content, controls, prev, next;
