@@ -40,7 +40,7 @@
 
 .shmui-controls {
     position: absolute;
-    top: 15px;
+    bottom: 35px;
     right: 10px;
     left: 10px;
     height: 0;
@@ -60,8 +60,8 @@
     background-color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     display: inline-block;
-    line-height: 25px;
-    border: 1px solid black;
+    line-height: 28px;
+    border: 1px solid #666;
 }
 
 .shmui-prev {
@@ -73,14 +73,14 @@
 }
 
 .shmui-prev::before {
-    content: '◀';
+    content: '←';
 }
 
 .shmui-zoom::before {
-    content: 'zoom';
+    content: '⤢';
 }
 
 .shmui-next::before {
-    content: '▶';
+    content: '→';
 }
 
