@@ -40,12 +40,12 @@
 
 .shmui-controls {
     position: absolute;
-    top: 10px;
+    top: 15px;
     right: 10px;
     left: 10px;
     height: 0;
     text-align: center;
-    opacity: 0.5;
+    opacity: 0.4;
 
     transition: opacity .25s ease-in-out;
     -moz-transition: opacity .25s ease-in-out;
@@ -62,6 +62,14 @@
     display: inline-block;
     line-height: 25px;
     border: 1px solid black;
+}
+
+.shmui-prev {
+    border-right: none;
+}
+
+.shmui-next{
+    border-left: none;
 }
 
 .shmui-prev::before {

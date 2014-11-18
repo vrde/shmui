@@ -62,7 +62,7 @@
                 state.el.append(controls);
 
                 prev.on('click', function (e) { $(this).blur(); move(-1); });
-                $zoom.on('click', function (e) { $(this).blur(); if (state.el.find('.zoom').length != 0) unzoom(); else zoom(e); });
+                $zoom.on('click', function (e) { $(this).blur(); toggleZoom(e); });
                 next.on('click', function (e) { $(this).blur(); move(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
             }
@@ -126,6 +126,13 @@
             goto(img.data('imageIndex'), img.data('galleryIndex'));
 
             update();
+        }
+
+        function toggleZoom (e) {
+            if (state.el.find('.zoom').length != 0)
+                unzoom();
+            else
+                zoom(e);
         }
 
         function zoom (e) {
@@ -192,7 +199,7 @@
             else if (k == 'Right' || k == ' ')
                 move(1);
             else if (k == 'z')
-                zoom(e);
+                toggleZoom(e);
 
             if (TRAPPED.indexOf(k) != -1)
                 e.preventDefault();
