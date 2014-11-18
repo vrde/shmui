@@ -86,7 +86,7 @@
             update();
         }
 
-        function goto(imageIndex, galleryIndex) {
+        function goto (imageIndex, galleryIndex) {
             state.currentImage = imageIndex;
             state.currentGallery = galleryIndex;
 
@@ -97,12 +97,16 @@
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
-                url = getSrc();
+                url = getSrc(),
+                i = new Image();
 
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
 
             newContent.on('click', close);
+            newContent.addClass('loading');
+            i.onload = function () { newContent.removeClass('loading'); };
+            i.src = url;
 
             content.fadeOut('fast', function () {
                 content.remove()
