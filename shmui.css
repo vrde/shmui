@@ -45,23 +45,48 @@
     left: 10px;
     height: 0;
     text-align: center;
-    opacity: 0.4;
-
-    transition: opacity .25s ease-in-out;
-    -moz-transition: opacity .25s ease-in-out;
-    -webkit-transition: opacity .25s ease-in-out;
+    opacity: 0.8;
 }
 
 .shmui-controls:hover {
     opacity: 1;
 }
 
-.shmui-prev, .shmui-next, .shmui-zoom {
-    background-color: rgba(255, 255, 255, 0.9);
+.shmui-prev,
+.shmui-next,
+.shmui-zoom {
+    background-color: #fff;
     cursor: pointer;
     display: inline-block;
     line-height: 28px;
     border: 1px solid #666;
+    opacity: 0.7;
+}
+
+.shmui-prev:hover,
+.shmui-next:hover,
+.shmui-zoom:hover {
+    opacity: 1;
+}
+
+.shmui-controls,
+.shmui-prev,
+.shmui-next,
+.shmui-zoom {
+    transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -webkit-transition: all .25s ease-in-out;
+}
+
+.shmui-controls.highlight {
+    transform: translateY(-15px);
+}
+
+.shmui-controls.highlight,
+.shmui-controls.highlight .shmui-prev,
+.shmui-controls.highlight .shmui-next,
+.shmui-controls.highlight .shmui-zoom {
+    opacity: 1;
 }
 
 .shmui-prev {

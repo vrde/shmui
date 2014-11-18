@@ -65,6 +65,10 @@
                 $zoom.on('click', function (e) { $(this).blur(); toggleZoom(e); });
                 next.on('click', function (e) { $(this).blur(); move(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
+                controls.addClass('highlight');
+                setTimeout(function () {
+                    controls.removeClass('highlight');
+                }, 1500);
             }
             return state.el;
         }
