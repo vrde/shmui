@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: sans-serif;
+}
+
+.content {
+    margin: 0 auto;
+    width: 600px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+}
+
+ul li {
+    vertical-align: middle;
+    display: inline-block;
+    width: 33%;
+    margin: 0;
+    padding: 5px;
+}
+
+ul li img {
+    max-width: 100%;
+    display: block;
+}
