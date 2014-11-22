@@ -146,34 +146,76 @@
         function zoom (e) {
             var el = getEl(),
                 content = el.find('.shmui-content'),
-                img = new Image();
+                img = new Image(),
+                lastTouchX = null, lastTouchY = null,
+                lastX, lastY;
 
             content.off('click');
             content.on('click', unzoom);
             content.addClass('zoom');
 
             img.onload = function () {
-                function reposition (e) {
+                lastX = 0;
+                lastY = 0;
+                function mouseAdaptor (e) {
                     var w = el.width(),
                         h = el.height(),
                         x = -e.clientX * (imageWidth - w) / w + 'px',
                         y = -e.clientY * (imageHeight - h) / h + 'px';
 
-                    if (imageWidth <= w)
-                        x = 'center';
-                    if (imageHeight <= h)
-                        y = 'center';
+                    return { x: x, y: y };
+                }
 
-                    content.css('background-position', x + ' ' + y);
+                function touchAdaptor (e) {
+                    var touch = e.originalEvent.touches[0],
+                        w = el.width(),
+                        h = el.height();
+
+                    lastX += touch.clientX - lastTouchX;
+                    lastY += touch.clientY - lastTouchY;
+                    lastTouchX = touch.clientX;
+                    lastTouchY = touch.clientY;
+
+
+                    lastX = Math.min(0, lastX);
+                    lastY = Math.min(0, lastY);
+
+                    lastX = Math.max(lastX, w - imageWidth);
+                    lastY = Math.max(lastY, h - imageHeight);
+
+                    return { x: lastX + 'px', y: lastY + 'px'};
+                }
+
+                function reposition (adaptor, e) {
+                    var pos = adaptor(e),
+                        w = el.width(),
+                        h = el.height();
+
+                    if (!pos)
+                        return;
+
+                    if (imageWidth <= w)
+                        pos.x = 'center';
+                    if (imageHeight <= h)
+                        pos.y = 'center';
+                    console.log(pos, content);
+
+                    content.css('background-position', pos.x + ' ' + pos.y);
+                    console.log('background-position', pos.x + ' ' + pos.y);
+
+                    e.preventDefault();
                 }
 
                 var imageWidth = this.width,
                     imageHeight = this.height;
 
-                reposition(e);
+                reposition(mouseAdaptor, e);
 
                 content.css('background-size', 'auto');
-                el.on('mousemove', reposition);
+                el.on('mousemove', reposition.bind(null, mouseAdaptor));
+                el.on('touchmove', reposition.bind(null, touchAdaptor));
+                el.on('touchstart', function (e) { var t = e.originalEvent.touches[0]; lastTouchX = t.clientX; lastTouchY = t.clientY; e.preventDefault(); });
+                el.on('touchend', function (e) { lastTouchX = null; lastTouchY = null; e.preventDefault(); });
             }
 
             img.src = getSrc();
