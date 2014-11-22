@@ -148,7 +148,7 @@
                 content = el.find('.shmui-content'),
                 img = new Image(),
                 lastTouchX = null, lastTouchY = null,
-                lastX, lastY;
+                lastX, lastY, lastOffsetX, lastOffsetY, inertia;
 
             content.off('click');
             content.on('click', unzoom);
@@ -157,13 +157,15 @@
             img.onload = function () {
                 lastX = 0;
                 lastY = 0;
+
                 function mouseAdaptor (e) {
                     var w = el.width(),
                         h = el.height(),
-                        x = -e.clientX * (imageWidth - w) / w + 'px',
-                        y = -e.clientY * (imageHeight - h) / h + 'px';
+                        x = -e.clientX * (imageWidth - w) / w,
+                        y = -e.clientY * (imageHeight - h) / h;
 
-                    return { x: x, y: y };
+                    reposition(x, y);
+                    e.preventDefault();
                 }
 
                 function touchAdaptor (e) {
@@ -171,11 +173,14 @@
                         w = el.width(),
                         h = el.height();
 
-                    lastX += touch.clientX - lastTouchX;
-                    lastY += touch.clientY - lastTouchY;
+                    lastOffsetX = touch.clientX - lastTouchX;
+                    lastOffsetY = touch.clientY - lastTouchY;
+
+                    lastX += lastOffsetX;
+                    lastY += lastOffsetY;
+
                     lastTouchX = touch.clientX;
                     lastTouchY = touch.clientY;
-
 
                     lastX = Math.min(0, lastX);
                     lastY = Math.min(0, lastY);
@@ -183,27 +188,45 @@
                     lastX = Math.max(lastX, w - imageWidth);
                     lastY = Math.max(lastY, h - imageHeight);
 
-                    return { x: lastX + 'px', y: lastY + 'px'};
+                    reposition(lastX, lastY);
+                    e.preventDefault();
                 }
 
-                function reposition (adaptor, e) {
-                    var pos = adaptor(e),
-                        w = el.width(),
+                function inertiaAdaptor () {
+                    var w = el.width(),
                         h = el.height();
 
-                    if (!pos)
-                        return;
+                    lastOffsetX /= 1.1;
+                    lastOffsetY /= 1.1;
+
+                    if ((Math.abs(lastOffsetX) < 0.5) && (Math.abs(lastOffsetY) < 0.5))
+                        clearInterval(inertia);
+
+                    lastX += lastOffsetX;
+                    lastY += lastOffsetY;
+
+                    lastX = Math.min(0, lastX);
+                    lastY = Math.min(0, lastY);
+
+                    lastX = Math.max(lastX, w - imageWidth);
+                    lastY = Math.max(lastY, h - imageHeight);
+
+                    reposition(lastX, lastY);
+                }
+
+                function reposition (x, y) {
+                    var w = el.width(),
+                        h = el.height();
+
+                    x = x + 'px';
+                    y = y + 'px';
 
                     if (imageWidth <= w)
-                        pos.x = 'center';
+                        x = 'center';
                     if (imageHeight <= h)
-                        pos.y = 'center';
-                    console.log(pos, content);
+                        y = 'center';
 
-                    content.css('background-position', pos.x + ' ' + pos.y);
-                    console.log('background-position', pos.x + ' ' + pos.y);
-
-                    e.preventDefault();
+                    content.css('background-position', x + ' ' + y);
                 }
 
                 var imageWidth = this.width,
@@ -212,10 +235,21 @@
                 reposition(mouseAdaptor, e);
 
                 content.css('background-size', 'auto');
-                el.on('mousemove', reposition.bind(null, mouseAdaptor));
-                el.on('touchmove', reposition.bind(null, touchAdaptor));
-                el.on('touchstart', function (e) { var t = e.originalEvent.touches[0]; lastTouchX = t.clientX; lastTouchY = t.clientY; e.preventDefault(); });
-                el.on('touchend', function (e) { lastTouchX = null; lastTouchY = null; e.preventDefault(); });
+                el.on('mousemove', mouseAdaptor);
+                el.on('touchmove', touchAdaptor);
+                el.on('touchstart', function (e) {
+                    var t = e.originalEvent.touches[0];
+                    clearInterval(inertia);
+                    lastTouchX = t.clientX;
+                    lastTouchY = t.clientY;
+                    e.preventDefault();
+                });
+                el.on('touchend', function (e) {
+                    inertia = setInterval(inertiaAdaptor, 30);
+                    lastTouchX = null;
+                    lastTouchY = null;
+                    e.preventDefault();
+                });
             }
 
             img.src = getSrc();
