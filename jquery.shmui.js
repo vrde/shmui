@@ -169,6 +169,8 @@
                         w = el.width(),
                         h = el.height();
 
+                    getEl().addClass('moving');
+
                     lastOffsetX = touch.clientX - lastTouchX;
                     lastOffsetY = touch.clientY - lastTouchY;
 
@@ -195,8 +197,10 @@
                     lastOffsetX /= 1.1;
                     lastOffsetY /= 1.1;
 
-                    if ((Math.abs(lastOffsetX) < 0.5) && (Math.abs(lastOffsetY) < 0.5))
+                    if ((Math.abs(lastOffsetX) < 0.5) && (Math.abs(lastOffsetY) < 0.5)) {
                         clearInterval(inertia);
+                        getEl().removeClass('moving');
+                    }
 
                     lastX += lastOffsetX;
                     lastY += lastOffsetY;
@@ -244,13 +248,13 @@
                     clearInterval(inertia);
                     lastTouchX = t.clientX;
                     lastTouchY = t.clientY;
-                    e.preventDefault();
+                    //e.preventDefault();
                 });
                 el.on('touchend', function (e) {
                     inertia = setInterval(inertiaAdaptor, 30);
                     lastTouchX = null;
                     lastTouchY = null;
-                    e.preventDefault();
+                    //e.preventDefault();
                 });
             }
 

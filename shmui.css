@@ -58,6 +58,8 @@
     background-color: #fff;
     cursor: pointer;
     display: inline-block;
+    margin: 0;
+    border-radius: 0;
     line-height: 28px;
     border: 1px solid #666;
     opacity: 0.7;
@@ -102,7 +104,7 @@
 }
 
 .shmui-zoom:before {
-    content: '⤢';
+    content: 'zoom';
 }
 
 .shmui-next:before {
@@ -156,5 +158,36 @@
 @keyframes rotation {
     from {transform: rotate(0deg);}
     to {transform: rotate(359deg);}
+}
+
+
+@media (max-width: 640px) {
+
+    .shmui-controls.highlight {
+        transform: translateY(0);
+    }
+
+    .shmui-controls {
+        bottom: 55px;
+        right: 0;
+        left: 0;
+        height: 0;
+        text-align: center;
+        opacity: 0.8;
+    }
+
+    .moving .shmui-controls {
+        opacity: 0;
+    }
+
+    .shmui-prev,
+    .shmui-next,
+    .shmui-zoom {
+        line-height: 50px;
+        font-size: 25px;
+        padding: 0 20px;
+        opacity: 1;
+    }
+
 }
 
