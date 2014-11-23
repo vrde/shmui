@@ -61,9 +61,9 @@
                 state.el.append(content);
                 state.el.append(controls);
 
-                prev.on('click', function (e) { $(this).blur(); move(-1); });
+                prev.on('click', function (e) { $(this).blur(); change(-1); });
                 $zoom.on('click', function (e) { $(this).blur(); toggleZoom(e); });
-                next.on('click', function (e) { $(this).blur(); move(1); });
+                next.on('click', function (e) { $(this).blur(); change(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
                 controls.addClass('highlight');
                 setTimeout(function () {
@@ -79,7 +79,7 @@
             return url;
         }
 
-        function move (offset) {
+        function change (offset) {
             var gallery = state.galleries[state.currentGallery],
                 pos = (state.currentImage + offset) % gallery.length;
 
@@ -98,6 +98,7 @@
         }
 
         function update () {
+            console.log('calling update');
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
@@ -132,8 +133,6 @@
                 state.lastLocation = window.location.pathname + window.location.search;
 
             goto(img.data('imageIndex'), img.data('galleryIndex'));
-
-            update();
         }
 
         function toggleZoom (e) {
@@ -155,9 +154,6 @@
             content.addClass('zoom');
 
             img.onload = function () {
-                lastX = 0;
-                lastY = 0;
-
                 function mouseAdaptor (e) {
                     var w = el.width(),
                         h = el.height(),
@@ -234,7 +230,13 @@
 
                 reposition(mouseAdaptor, e);
 
+                lastX = -(imageWidth - el.width()) / 2;
+                lastY = -(imageHeight - el.height()) / 2;
+
                 content.css('background-size', 'auto');
+                content.css('background-position', 'center center');
+                //content.css('background-position', lastX + 'px ' + lastY + 'px');
+
                 el.on('mousemove', mouseAdaptor);
                 el.on('touchmove', touchAdaptor);
                 el.on('touchstart', function (e) {
@@ -279,9 +281,9 @@
             if (k == 'Esc')
                 close();
             else if (k == 'Left')
-                move(-1);
+                change(-1);
             else if (k == 'Right' || k == ' ')
-                move(1);
+                change(1);
             else if (k == 'z')
                 toggleZoom(e);
 
