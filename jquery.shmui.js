@@ -22,7 +22,10 @@
 
                 // root element containing everything
                 // related to the plugin
-                el: null
+                el: null,
+
+                // the id for the inertia timer
+                inertia: null
             },
 
             // soon...
@@ -98,7 +101,6 @@
         }
 
         function update () {
-            console.log('calling update');
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 newContent = $('<div />', { 'class': 'shmui-content' }),
@@ -142,12 +144,15 @@
                 zoom(e);
         }
 
+        function stopInertia () {
+        }
+
         function zoom (e) {
             var el = getEl(),
                 content = el.find('.shmui-content'),
                 img = new Image(),
                 lastTouchX = null, lastTouchY = null,
-                lastX, lastY, lastOffsetX, lastOffsetY, inertia;
+                lastX, lastY, lastOffsetX, lastOffsetY;
 
             content.off('click');
             content.on('click', unzoom);
@@ -168,6 +173,9 @@
                     var touch = e.originalEvent.touches[0],
                         w = el.width(),
                         h = el.height();
+
+                    //content.css('background-image', 'url("'+ '/img/small-01.jpg' + '")');
+                    //content.css('background-size', 'contain');
 
                     getEl().addClass('moving');
 
@@ -194,11 +202,8 @@
                     var w = el.width(),
                         h = el.height();
 
-                    lastOffsetX /= 1.1;
-                    lastOffsetY /= 1.1;
-
                     if ((Math.abs(lastOffsetX) < 0.5) && (Math.abs(lastOffsetY) < 0.5)) {
-                        clearInterval(inertia);
+                        clearInterval(state.inertia);
                         getEl().removeClass('moving');
                     }
 
@@ -211,6 +216,9 @@
                     lastX = Math.max(lastX, w - imageWidth);
                     lastY = Math.max(lastY, h - imageHeight);
 
+                    lastOffsetX /= 1.1;
+                    lastOffsetY /= 1.1;
+
                     reposition(lastX, lastY);
                 }
 
@@ -222,11 +230,12 @@
                     y = y + 'px';
 
                     if (imageWidth <= w)
-                        x = 'center';
+                        x = '-50%';
                     if (imageHeight <= h)
-                        y = 'center';
+                        y = '-50%';
 
-                    content.css('background-position', x + ' ' + y);
+                    content.css('transform', 'translate3d(' + x + ', ' + y + ', 0px)');
+                    //content.css('background-position', x + ' ' + y);
                 }
 
                 var imageWidth = this.width,
@@ -238,22 +247,36 @@
                 lastY = -(imageHeight - el.height()) / 2;
 
                 content.css('background-size', 'auto');
-                content.css('background-position', 'center center');
+                content.css('background-position', '0 0');
+                content.css({
+                    'width': imageWidth + 'px',
+                    'height': imageHeight + 'px',
+                    'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)'
+                });
                 //content.css('background-position', lastX + 'px ' + lastY + 'px');
 
                 el.on('mousemove', mouseAdaptor);
-                el.on('touchmove', touchAdaptor);
+                el.on('touchmove', function (e) {
+                    if($(e.target).hasClass('zoom'))
+                        touchAdaptor(e);
+                    else
+                        e.preventDefault();
+                });
                 el.on('touchstart', function (e) {
                     var t = e.originalEvent.touches[0];
-                    clearInterval(inertia);
+                    clearInterval(state.inertia);
                     lastTouchX = t.clientX;
                     lastTouchY = t.clientY;
-                    //e.preventDefault();
                 });
                 el.on('touchend', function (e) {
-                    inertia = setInterval(inertiaAdaptor, 30);
-                    lastTouchX = null;
-                    lastTouchY = null;
+                    if($(e.target).hasClass('zoom')) {
+                        inertiaAdaptor();
+                        state.inertia = setInterval(inertiaAdaptor, 30);
+                    } else {
+                        clearInterval(state.inertia);
+                        lastTouchX = null;
+                        lastTouchY = null;
+                    }
                     //e.preventDefault();
                 });
             }
@@ -265,10 +288,16 @@
             var el = getEl(),
                 content = el.find('.shmui-content');
 
+            clearInterval(state.inertia);
+            el.removeClass('moving');
+
             content.removeClass('zoom');
             content.css({
                 'background-size': 'contain',
-                'background-position': 'center'
+                'background-position': 'center',
+                'width': 'auto',
+                'height': 'auto',
+                'transform': 'translate3d(0px, 0px, 0px)'
             });
 
             content.off('click');
