@@ -1,3 +1,14 @@
+/**
+ * Dear friend, thanks for taking a look at the code.
+ * It's still refactored, I'll do it when I'm sure this gallery has a decent
+ * performance on different mobile devices. Once I'm sure about it, I'll clean
+ * up my code a bit :)
+ *
+ * Anyway, if you have any suggestion, feel free to contact me on Github.
+ *
+ *  -vrde
+ */
+
 (function ($) {
     'use strict'
 
@@ -64,15 +75,17 @@
                 controls.append(prev, $zoom, next);
                 state.el.append(content);
                 state.el.append(controls);
+                state.el.on('click', function (e) {
+                    if ($(e.target).hasClass('shmui-wrap'))
+                        close();
+                });
 
                 prev.on('click', function (e) { $(this).blur(); change(-1); });
                 $zoom.on('click', function (e) { $(this).blur(); toggleZoom(e); });
                 next.on('click', function (e) { $(this).blur(); change(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
                 controls.addClass('highlight');
-                setTimeout(function () {
-                    controls.removeClass('highlight');
-                }, 1500);
+                setTimeout(function () { controls.removeClass('highlight'); }, 1500);
             }
             return state.el;
         }
@@ -80,6 +93,21 @@
         function getSrc () {
             var img = state.galleries[state.currentGallery][state.currentImage],
                 url = img.attr('data-large-src') || img.attr('src');
+            return url;
+        }
+
+        function preloadNextImage () {
+            var gallery = state.galleries[state.currentGallery],
+                pos = (state.currentImage + 1) % gallery.length,
+                imgObj = new Image(),
+                img, url;
+
+            if (pos == -1)
+                pos = gallery.length - 1
+
+            img = state.galleries[state.currentGallery][pos],
+            url = img.attr('data-large-src') || img.attr('src');
+            imgObj.src = url;
             return url;
         }
 
@@ -114,14 +142,20 @@
             newContent.css('background-image', 'url("'+ url + '")');
 
             newContent.on('click', close);
-            newContent.addClass('loading');
-            i.onload = function () { newContent.removeClass('loading'); };
+            el.addClass('loading');
+            newContent.hide();
+            el.find('.shmui-controls').hide();
+            i.onload = function () {
+                el.removeClass('loading');
+                newContent.fadeIn('fast');
+                el.find('.shmui-controls').fadeIn('fast');
+                preloadNextImage();
+            };
             i.src = url;
 
             content.fadeOut('fast', function () {
                 content.remove()
             });
-            newContent.hide().fadeIn('fast');
         }
 
         function close () {

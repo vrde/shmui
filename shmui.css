@@ -117,7 +117,7 @@
  * Inspired by:
  * http://www.designcouch.com/home/why/2013/05/23/dead-simple-pure-css-loading-spinner/
  */
-.shmui-content.loading:after {
+.shmui-wrap.loading:after {
     position: absolute;
     top: 50%;
     bottom: 50%;
