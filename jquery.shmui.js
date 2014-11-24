@@ -107,6 +107,8 @@
                 url = getSrc(),
                 i = new Image();
 
+            unzoom();
+
             content.after(newContent);
             newContent.css('background-image', 'url("'+ url + '")');
 
@@ -241,7 +243,6 @@
                 var imageWidth = this.width,
                     imageHeight = this.height;
 
-                reposition(mouseAdaptor, e);
 
                 lastX = -(imageWidth - el.width()) / 2;
                 lastY = -(imageHeight - el.height()) / 2;
@@ -254,6 +255,9 @@
                     'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)'
                 });
                 //content.css('background-position', lastX + 'px ' + lastY + 'px');
+
+                //if (e.type == 'click')
+                //    mouseAdaptor(e);
 
                 el.on('mousemove', mouseAdaptor);
                 el.on('touchmove', function (e) {
@@ -301,8 +305,12 @@
             });
 
             content.off('click');
-            content.on('click', close);
             el.off('mousemove');
+            el.off('touchstart');
+            el.off('touchmove');
+            el.off('touchend');
+
+            content.on('click', close);
         }
 
         function keypress (e) {
