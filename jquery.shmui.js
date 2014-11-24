@@ -236,7 +236,10 @@
                     if (imageHeight <= h)
                         y = '-50%';
 
-                    content.css('transform', 'translate3d(' + x + ', ' + y + ', 0px)');
+                    content.css({
+                        'transform': 'translate3d(' + x + ', ' + y + ', 0px)',
+                        '-webkit-transform': 'translate3d(' + x + ', ' + y + ', 0px)'
+                    });
                     //content.css('background-position', x + ' ' + y);
                 }
 
@@ -252,7 +255,8 @@
                 content.css({
                     'width': imageWidth + 'px',
                     'height': imageHeight + 'px',
-                    'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)'
+                    'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)',
+                    '-webkit-transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)'
                 });
                 //content.css('background-position', lastX + 'px ' + lastY + 'px');
 
@@ -301,7 +305,8 @@
                 'background-position': 'center',
                 'width': 'auto',
                 'height': 'auto',
-                'transform': 'translate3d(0px, 0px, 0px)'
+                'transform': 'translate3d(0px, 0px, 0px)',
+                '-webkit-transform': 'translate3d(0px, 0px, 0px)'
             });
 
             content.off('click');
