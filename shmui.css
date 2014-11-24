@@ -161,7 +161,7 @@
 }
 
 
-@media (max-width: 640px) {
+@media (max-width: 800px) {
 
     .shmui-controls.highlight {
         transform: translateY(0);

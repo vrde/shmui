@@ -2,7 +2,8 @@
     'use strict'
 
     // Keys to trap when plugin is active
-    var TRAPPED = ['Esc', 'Left', 'Right', ' '];
+    var TRAPPED = ['Esc', 'Left', 'Right', ' '],
+        DEVICE_IMAGE_MAX_RATIO = 2;
 
     $.fn.shmui = function (options) {
 
@@ -146,7 +147,20 @@
                 zoom(e);
         }
 
-        function stopInertia () {
+        function optimizeImageSize (imageWidth, imageHeight) {
+            var deviceSize = Math.max($(window).width(), $(window).height()),
+                imageSize = Math.max(imageWidth, imageHeight),
+                maxSize = deviceSize * DEVICE_IMAGE_MAX_RATIO,
+                resizeRatio = maxSize / imageSize;
+
+            // do not stretch the image
+            if (resizeRatio > 1)
+                resizeRatio = 1;
+
+            return {
+                width: imageWidth * resizeRatio,
+                height: imageHeight * resizeRatio
+            }
         }
 
         function zoom (e) {
@@ -231,10 +245,12 @@
                     x = x + 'px';
                     y = y + 'px';
 
+                    /*
                     if (imageWidth <= w)
                         x = '-50%';
                     if (imageHeight <= h)
                         y = '-50%';
+                        */
 
                     content.css({
                         'transform': 'translate3d(' + x + ', ' + y + ', 0px)',
@@ -244,15 +260,19 @@
                 }
 
                 var imageWidth = this.width,
-                    imageHeight = this.height;
+                    imageHeight = this.height,
+                    resizedImageDimension = optimizeImageSize(imageWidth, imageHeight);
+
+                imageWidth = resizedImageDimension.width;
+                imageHeight = resizedImageDimension.height;
 
 
                 lastX = -(imageWidth - el.width()) / 2;
                 lastY = -(imageHeight - el.height()) / 2;
 
                 content.css({
-                    'background-size': 'auto',
                     'background-position': '0 0',
+                    'background-size': 'cover',
                     'width': imageWidth + 'px',
                     'height': imageHeight + 'px',
                     'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)',
@@ -301,8 +321,8 @@
 
             content.removeClass('zoom');
             content.css({
-                'background-size': 'contain',
                 'background-position': 'center',
+                'background-size': 'contain',
                 'width': 'auto',
                 'height': 'auto',
                 'transform': 'translate3d(0px, 0px, 0px)',
