@@ -250,9 +250,9 @@
                 lastX = -(imageWidth - el.width()) / 2;
                 lastY = -(imageHeight - el.height()) / 2;
 
-                content.css('background-size', 'auto');
-                content.css('background-position', '0 0');
                 content.css({
+                    'background-size': 'auto',
+                    'background-position': '0 0',
                     'width': imageWidth + 'px',
                     'height': imageHeight + 'px',
                     'transform': 'translate3d(' + lastX + 'px, ' + lastY + 'px, 0px)',
