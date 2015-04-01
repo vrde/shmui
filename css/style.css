@@ -6,11 +6,6 @@ html {
     font-family: sans-serif;
 }
 
-.content {
-    margin: 0 auto;
-    width: 600px;
-}
-
 ul {
     list-style-type: none;
     padding: 0;
@@ -18,31 +13,8 @@ ul {
     font-size: 0;
 }
 
-ul li {
-    vertical-align: middle;
-    display: inline-block;
-    width: 33%;
-    margin: 0;
-    padding: 5px;
-}
-
-ul li img {
-    max-width: 100%;
+img {
+    width: 100%;
     display: block;
 }
 
-@media (max-width: 800px) {
-
-    .content {
-        margin: 0 auto;
-        width: 80%;
-    }
-
-    ul li {
-        vertical-align: middle;
-        display: block;
-        width: 100%;
-        padding: 5px;
-    }
-
-}

@@ -80,17 +80,6 @@
     -webkit-transition: all .25s ease-in-out;
 }
 
-.shmui-controls.highlight {
-    transform: translateY(-15px);
-}
-
-.shmui-controls.highlight,
-.shmui-controls.highlight .shmui-prev,
-.shmui-controls.highlight .shmui-next,
-.shmui-controls.highlight .shmui-zoom {
-    opacity: 1;
-}
-
 .shmui-prev {
     border-right: none;
 }
@@ -162,10 +151,6 @@
 
 
 @media (max-width: 800px) {
-
-    .shmui-controls.highlight {
-        transform: translateY(0);
-    }
 
     .shmui-controls {
         bottom: 55px;

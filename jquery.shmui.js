@@ -72,7 +72,12 @@
                     'class': 'shmui-next'
                 });
 
-                controls.append(prev, $zoom, next);
+
+                if (state.galleries[state.currentGallery].length > 1)
+                    controls.append(prev, $zoom, next);
+                else
+                    controls.append($zoom);
+
                 state.el.append(content);
                 state.el.append(controls);
                 state.el.on('click', function (e) {
@@ -84,8 +89,6 @@
                 $zoom.on('click', function (e) { $(this).blur(); toggleZoom(e); });
                 next.on('click', function (e) { $(this).blur(); change(1); });
                 $('body').prepend(state.el).addClass('shmui-stop-scrolling');
-                controls.addClass('highlight');
-                setTimeout(function () { controls.removeClass('highlight'); }, 1500);
             }
             return state.el;
         }
@@ -114,6 +117,9 @@
         function change (offset) {
             var gallery = state.galleries[state.currentGallery],
                 pos = (state.currentImage + offset) % gallery.length;
+
+            if (gallery.length == 1)
+                return;
 
             if (pos == -1)
                 pos = gallery.length - 1

@@ -7,6 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <link rel="stylesheet" href="css/waffle.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="shmui.css">
 
@@ -16,34 +17,55 @@
 </head>
 
 <body>
-    <div class="content">
-        <h1>First Gallery</h1>
-
-        <ul>
-            <li>
-                <img src="img/small-01.jpg" data-large-src="img/01.jpg" />
-            </li>
-            <li>
-                <img src="img/small-02.jpg" data-large-src="img/02.jpg" />
-            </li>
-            <li>
-                <img src="img/small-03.jpg" data-large-src="img/03.jpg" />
-            </li>
-        </ul>
-
-        <h1>Second Gallery</h1>
-
-        <ul>
-            <li>
-                <img src="img/small-04.jpg" data-large-src="img/04.jpg" />
-            </li>
-            <li>
-                <img src="img/small-05.jpg" data-large-src="img/05.jpg" />
-            </li>
-            <li>
-                <img src="img/small-06.jpg" data-large-src="img/06.jpg" />
-            </li>
-        </ul>
+    <div class="row">
+        <div class="unit">
+            <h1>Shmui is a nice cat</h1>
+        </div>
     </div>
+
+    <ul class="row split3">
+        <li class="unit">
+            <img src="img/small-01.jpg" data-large-src="img/01.jpg" />
+        </li>
+        <li class="unit">
+            <img src="img/small-02.jpg" data-large-src="img/02.jpg" />
+        </li>
+        <li class="unit">
+            <img src="img/small-03.jpg" data-large-src="img/03.jpg" />
+        </li>
+
+        <li class="unit split3">
+            <img src="img/small-04.jpg" data-large-src="img/04.jpg" />
+        </li>
+        <li class="unit">
+            <img src="img/small-05.jpg" data-large-src="img/05.jpg" />
+        </li>
+        <li class="unit">
+            <img src="img/small-06.jpg" data-large-src="img/06.jpg" />
+        </li>
+    </ul>
+
+    <div class="row">
+        <div class="unit">
+            <h1>Single image</h1>
+        </div>
+    </div>
+    <ul class="row split3">
+        <li class="unit">
+            <img src="img/small-01.jpg" data-large-src="img/01.jpg" />
+        </li>
+    </ul>
+
+    <div class="row">
+        <div class="unit">
+            <h1>Single image small</h1>
+        </div>
+    </div>
+    <ul class="row split3">
+        <li class="unit">
+            <img src="img/10.jpg" />
+        </li>
+    </ul>
+
 </body>
 </html>
